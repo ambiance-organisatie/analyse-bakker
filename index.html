@@ -184,7 +184,7 @@ const pct = (n,d=1) => (n===null||n===undefined) ? 'onbekend' : Number(n).toLoca
 const dec = (n,d=1) => (n===null||n===undefined) ? 'onbekend' : Number(n).toLocaleString('nl-NL',{minimumFractionDigits:d,maximumFractionDigits:d});
 const sgn = (n,d=1) => (n>0?'+':'') + pct(n,d);
 const cls = n => n>=0 ? 'up' : 'down';
-const rt = (m,est) => m===null||m===undefined ? 'onbekend' : `${m} min${est?' <span class="badge b-est">geschat</span>':''}`;
+const rt = (m,est) => m===null||m===undefined ? 'onbekend' : `${m} min`;
 const Y = () => S.year;
 
 const SLIDES = [
@@ -355,7 +355,7 @@ function renderZones(){
    <div class="mini-track"><div class="mini-fill" data-w="${(x.omzet/max*100).toFixed(1)}%"></div></div>
    <div class="meta">${pct(x.pct)} van de omzet<br>${nr(x.klanten)} klanten · ${nr(x.pc4)} postcodes<br>${nr(x.leads)} online aanvragen<br>Marktaandeel rayondeel: ${x.ma_rayon===null?'n.v.t.':pct(x.ma_rayon,2)}</div></div>`).join('')}</div>
   <div class="card" style="margin-top:18px;font-size:14px;line-height:1.6;"><b>${pct(D.extra.binnen15_pct[y])}</b> van de particuliere omzet ${y} komt uit postcodes binnen 15 minuten rijden. Daarbuiten zakt het marktaandeel in het rayon sterk.</div>
-  <div class="note">Reistijd: ${nr(D.meta.reistijd_model.n)} postcodes uit het aangeleverde reistijdbestand; overige postcodes geschat met ${dec(D.meta.reistijd_model.a,2)} + ${dec(D.meta.reistijd_model.b,3)} × hemelsbrede km vanaf het midden van postcode ${D.meta.vestiging_pc4||''} (gemiddelde afwijking ${dec(D.meta.reistijd_model.mae)} min op de bekende waarden). Marktaandeel alleen over rayonpostcodes met bekend potentieel; aanvragen alleen waar een postcode is ingevuld.</div>`;
+  <div class="note">Reistijd: ${nr(D.meta.reistijd_model.n)} postcodes uit het aangeleverde reistijdbestand; overige postcodes berekend met ${dec(D.meta.reistijd_model.a,2)} + ${dec(D.meta.reistijd_model.b,3)} × hemelsbrede km vanaf het midden van postcode ${D.meta.vestiging_pc4||''} (gemiddelde afwijking ${dec(D.meta.reistijd_model.mae)} min op de bekende waarden). Marktaandeel alleen over rayonpostcodes met bekend potentieel; aanvragen alleen waar een postcode is ingevuld.</div>`;
 }
 // ============ 8 RAYON ============
 function renderRayon(){
@@ -401,7 +401,7 @@ function renderPostcode(){
   return head('Postcodeprestatie','Prestatie per postcodegebied',`Particulier, ${y}. Aanvragen en kansen per 1.000 huishoudens, zodat grote en kleine gebieden vergelijkbaar zijn. Alle rayonpostcodes plus postcodes buiten het rayon met een order.`)+
   `<div class="card" style="padding:10px 18px;"><div style="max-height:62vh;overflow:auto;"><table class="ptab"><thead><tr><th>Gebied</th><th class="num">Reistijd</th><th class="num">Huishoudens</th><th class="num">Ink.index</th><th class="num">Potentieel</th><th class="num">Aanvragen /1.000 hh</th><th class="num">Kansen /1.000 hh</th><th class="num">Orders</th><th class="num">Omzet</th><th class="num">Marktaandeel</th></tr></thead><tbody>
   ${rows.map(r=>`<tr><td><b>${r.naam}</b> <span style="color:var(--sub)">${r.pc4}</span>${r.rayon?'':'<span class="badge b-out">buiten rayon</span>'}</td>
-   <td class="num">${r.reistijd===null?'onbekend':r.reistijd+' min'}${r.geschat?' <span class="badge b-est">geschat</span>':''}</td><td class="num">${r.hh===null?'onbekend':nr(r.hh)}</td><td class="num">${r.ink??'onbekend'}</td><td class="num">${r.potentieel===null?'onbekend':eur(r.potentieel)}</td>
+   <td class="num">${r.reistijd===null?'onbekend':r.reistijd+' min'}</td><td class="num">${r.hh===null?'onbekend':nr(r.hh)}</td><td class="num">${r.ink??'onbekend'}</td><td class="num">${r.potentieel===null?'onbekend':eur(r.potentieel)}</td>
    <td class="num">${r['leads1000_'+y]===null?'onbekend':dec(r['leads1000_'+y])}</td><td class="num">${r['kansen1000_'+y]===null?'onbekend':dec(r['kansen1000_'+y])}</td>
    <td class="num">${nr(r['orders'+y])}</td><td class="num"><b>${eur(r['omzet'+y])}</b></td><td class="num">${chip(r['ma'+y],r['klanten'+y],r['omzet'+y])}</td></tr>`).join('')}
   </tbody></table></div></div>
@@ -435,13 +435,13 @@ function renderTop10(){
    <div class="card"><div class="kpi-label" style="margin-bottom:6px;">Top 10 postcodegebieden (particulier)</div>
     ${rows.map((r,i)=>`<div class="rank-row"><div class="rank-num">${String(i+1).padStart(2,'0')}</div>
      <div><div class="rank-name">${r.naam} <span style="color:var(--sub);font-weight:500;font-size:13px;">· ${r.pc4}</span>${r.rayon?'':'<span class="badge b-out">buiten rayon</span>'}${(D.projecten||[]).some(c=>c.pc4===r.pc4&&c.jaar===y)?'<span class="badge b-est">project</span>':''}</div>
-      <div class="rank-sub">${nr(r['klanten'+y])} klanten · ${r.reistijd===null?'reistijd onbekend':r.reistijd+' min'}${r.geschat?' (geschat)':''}</div>
+      <div class="rank-sub">${nr(r['klanten'+y])} klanten · ${r.reistijd===null?'reistijd onbekend':r.reistijd+' min'}</div>
       <div class="mini-track" style="width:230px;"><div class="mini-fill" data-w="${(r['omzet'+y]/max*100).toFixed(1)}%"></div></div></div>
      <div class="rank-amt">${eur(r['omzet'+y])}</div></div>`).join('')}
    </div>
    <div style="display:flex;flex-direction:column;gap:18px;">
     <div class="card"><div class="kpi-label">Reistijd (particulier, per order)</div><div class="kpi-value" style="font-size:34px;">${dec(rs.gem)} min</div><div class="kpi-foot">gemiddelde · mediaan ${dec(rs.mediaan)} min</div>
-     <div class="meta" style="font-size:12.5px;">${nr(rs.gemeten)} van ${nr(rs.orders)} orders hebben een gemeten reistijd${rs.geschat?`; ${nr(rs.geschat)} geschat vanaf het midden van de postcode`:''}${rs.onbekend?`; ${nr(rs.onbekend)} onbekend`:''}.</div></div>
+     <div class="meta" style="font-size:12.5px;">${nr(rs.gemeten)} van ${nr(rs.orders)} orders hebben een gemeten reistijd${rs.geschat?`; ${nr(rs.geschat)} berekend vanaf het midden van de postcode`:''}${rs.onbekend?`; ${nr(rs.onbekend)} onbekend`:''}.</div></div>
     <div class="card"><div class="kpi-label" style="margin-bottom:8px;">Omzet per reistijdzone</div>
      ${z.filter(q=>q.omzet>0).map(q=>`<div class="bar-row" style="grid-template-columns:90px 1fr 60px;padding:5px 0;"><div class="lbl">${q.zone}</div><div class="track" style="height:16px;"><div class="fill" style="background:${ACC}" data-w="${q.pct}%"></div></div><div class="pc">${pct(q.pct)}</div></div>`).join('')}</div>
     <div class="card"><div class="kpi-label">Binnen het rayon</div><div class="kpi-value" style="font-size:34px;">${pct(D.rayon[y].binnen_pct)}</div><div class="kpi-foot">van de particuliere omzet ${y} · ${pct(D.rayon[y].binnen_klanten_pct)} van de klanten</div></div>
@@ -452,7 +452,7 @@ function renderTop10(){
 function renderKansen(part){
   const K=D.kansen, list=K.top10.slice(part===1?0:5,part===1?5:10), g=K.gewichten;
   const tags=r=>[r.ink>=105?'<span class="kans-tag">Boven modaal</span>':'', r.p_een>=45?'<span class="kans-tag">Stedelijk</span>':'', r.p_mk>=35?'<span class="kans-tag">Gezinnen</span>':''].join('');
-  const card=r=>`<div class="kans2"><div class="kans2-top"><div><div class="kans-name">${r.naam}</div><div class="kans-sub">${r.pc4} · ${r.reistijd} min${r.geschat?' (geschat)':''}${r.plaats&&r.plaats!==r.naam?' · '+r.plaats:''}</div></div><span class="kans2-score">${dec(r.score,1)}</span></div>
+  const card=r=>`<div class="kans2"><div class="kans2-top"><div><div class="kans-name">${r.naam}</div><div class="kans-sub">${r.pc4} · ${r.reistijd} min${r.plaats&&r.plaats!==r.naam?' · '+r.plaats:''}</div></div><span class="kans2-score">${dec(r.score,1)}</span></div>
    <span class="ma-pill">${pct(r.ma,2)} marktaandeel</span>
    <div class="kv"><span>Kooppotentieel</span><b>${eur(r.potentieel)}</b></div>
    <div class="kv"><span>Klanten / 100 hh</span><b>${dec(r.kl100,2)} <span style="color:var(--sub);font-weight:500">(${nr(r.klanten)} klanten)</span></b></div>
